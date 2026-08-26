@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b2a4a" />
+    <meta
+      name="description"
+      content="Compare two Excel files, find matching names, and download a new Excel report."
+    />
+    <title>NameMatch Excel</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" role="img">
+          <path d="M11 6h19l8 8v28H11z" fill="none" stroke="currentColor" stroke-width="3" />
+          <path d="M30 6v9h8M17 23h15M17 30h15M17 37h10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+          <path d="m4 23 4 4 7-8" fill="none" stroke="#65d1b5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div>
+        <p class="eyebrow">FAST • PRIVATE • PHONE-FRIENDLY</p>
+        <h1>NameMatch Excel</h1>
+        <p class="subtitle">Find the same names in two files and create a new Excel report.</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="how-it-works" aria-label="How it works">
+        <div><span>1</span> Upload two files</div>
+        <div><span>2</span> Compare names</div>
+        <div><span>3</span> Download Excel</div>
+      </section>
+
+      <section class="upload-grid" aria-label="Upload Excel files">
+        <article class="file-card" id="card-a">
+          <div class="card-heading">
+            <span class="file-number">1</span>
+            <div>
+              <h2>First Excel File</h2>
+              <p>Choose the first list of names.</p>
+            </div>
+          </div>
+
+          <input class="file-input" id="file-a" type="file" accept=".xlsx,.xls,.csv" />
+          <label class="upload-button" for="file-a">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5h14v-5" /></svg>
+            Select First File
+          </label>
+
+          <div class="file-status" id="status-a" aria-live="polite">
+            <strong>No file selected</strong>
+            <span>Excel or CSV</span>
+          </div>
+
+          <label class="select-label is-hidden" id="column-wrap-a" for="column-a">
+            Name column
+            <select id="column-a"></select>
+          </label>
+        </article>
+
+        <article class="file-card" id="card-b">
+          <div class="card-heading">
+            <span class="file-number">2</span>
+            <div>
+              <h2>Second Excel File</h2>
+              <p>Choose the list you want to check against.</p>
+            </div>
+          </div>
+
+          <input class="file-input" id="file-b" type="file" accept=".xlsx,.xls,.csv" />
+          <label class="upload-button" for="file-b">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5h14v-5" /></svg>
+            Select Second File
+          </label>
+
+          <div class="file-status" id="status-b" aria-live="polite">
+            <strong>No file selected</strong>
+            <span>Excel or CSV</span>
+          </div>
+
+          <label class="select-label is-hidden" id="column-wrap-b" for="column-b">
+            Name column
+            <select id="column-b"></select>
+          </label>
+        </article>
+      </section>
+
+      <section class="action-panel">
+        <label class="option-row" for="ignore-order">
+          <input id="ignore-order" type="checkbox" checked />
+          <span>
+            <strong>Ignore name order</strong>
+            <small>Matches “Daria, Kimberly” with “Kimberly Daria”</small>
+          </span>
+        </label>
+
+        <button class="compare-button" id="compare" type="button" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h11m0 0-3-3m3 3-3 3M16 17H5m0 0 3 3m-3-3 3-3" /></svg>
+          Compare Names
+        </button>
+        <p class="privacy-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3m-12 0h14v10H5z" /></svg>
+          Your files stay on your device and are not uploaded to a server.
+        </p>
+      </section>
+
+      <section class="results is-hidden" id="results" aria-live="polite">
+        <div class="results-heading">
+          <div>
+            <p class="eyebrow dark">COMPARISON COMPLETE</p>
+            <h2>Matching Names Found</h2>
+          </div>
+          <div class="match-total"><strong id="match-count">0</strong><span>matches</span></div>
+        </div>
+
+        <div class="summary-grid">
+          <div><strong id="rows-a">0</strong><span>Rows in File 1</span></div>
+          <div><strong id="rows-b">0</strong><span>Rows in File 2</span></div>
+          <div><strong id="unique-count">0</strong><span>Unique Matching Names</span></div>
+        </div>
+
+        <div class="table-wrap" id="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Matching Name</th><th>File 1 Row</th><th>File 2 Row</th></tr></thead>
+            <tbody id="preview-body"></tbody>
+          </table>
+        </div>
+        <p class="no-matches is-hidden" id="no-matches">No matching names were found. Check the selected name columns and try again.</p>
+
+        <button class="download-button" id="download" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14" /></svg>
+          Download Matching Names.xlsx
+        </button>
+        <button class="reset-button" id="reset" type="button">Compare Different Files</button>
+      </section>
+
+      <section class="error-box is-hidden" id="error" role="alert">
+        <strong>We couldn’t read that file.</strong>
+        <span id="error-message">Please select a valid Excel or CSV file and try again.</span>
+      </section>
+    </main>
+
+    <footer>NameMatch Excel • Simple document matching</footer>
+  </body>
+</html>
